@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+
+  redis:
+    image: redis
+    container_name: cocktail-db
+    ports:
+      - "6379:6379"
+
+  amqp:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  bot:
+    container_name: bar-bot
+    build: ./bot
+    ports:
+      - "80:80"
+    depends_on:
+      - redis
+      - amqp
+    restart: on-failure
+    environment:
+      BOT_TOKEN: BOT_TOKEN
+
+  barmen-junior:
+    container_name: barmen-junior
+    build: ./barmen
+    depends_on:
+      - redis
+      - amqp
+    restart: on-failure
+    environment:
+      - BARMEN="Василий"
+
+  barmen-middle:
+    container_name: barmen-middle
+    build: ./barmen
+    depends_on:
+      - redis
+      - amqp
+    restart: on-failure
+    environment:
+      - BARMEN="Гордей"
+
+networks:
+  bar-network:
+    driver: bridge

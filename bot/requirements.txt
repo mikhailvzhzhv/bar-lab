@@ -1,0 +1,5 @@
+aio_pika
+aiogram
+python-dotenv
+redis
+asyncio
